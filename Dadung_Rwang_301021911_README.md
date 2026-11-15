@@ -7,7 +7,7 @@ Student ID: 301921911
 
 ## Case study
 
-Hotel Reservation System
+E-commerce Platform
 
 ## Portfolio folders
 
