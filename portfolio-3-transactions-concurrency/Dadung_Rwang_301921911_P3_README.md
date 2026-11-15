@@ -1,7 +1,7 @@
 
 # Portfolio 3: Transactions and Concurrency Control
 
-**Student:** Dadung Rwang
+**Student:** Dadung Rwang Pam
 **Student ID:** 301921911
 **Course:** MIT 8103 – Advanced Database Systems
 **Case Study:** E-commerce Platform Database
@@ -9,9 +9,9 @@
 
 ## 1. Introduction
 
-This portfolio demonstrates transaction management in an e-commerce database using PostgreSQL. It focuses on saving database changes with COMMIT and reversing uncommitted changes with ROLLBACK.
+This portfolio demonstrates transaction management and concurrency control in an e-commerce database using PostgreSQL. It focuses on saving database changes with COMMIT, reversing uncommitted changes with ROLLBACK, and managing simultaneous database operations.
 
-The practical exercise uses payment processing and order confirmation to demonstrate transaction control, constraint enforcement and transaction atomicity.
+The practical exercises use payment processing, order confirmation and product stock management to demonstrate transaction control, constraint enforcement, transaction atomicity and concurrency handling.
 
 ## 2. COMMIT Transaction: Confirming a Payment
 
@@ -55,7 +55,7 @@ COMMIT;
 
 ### 2.4 Execution Results
 
-The PostgreSQL terminal returned:
+PostgreSQL returned:
 
 ```text
 BEGIN
@@ -84,13 +84,7 @@ This confirmed that the condition `payment_status = 'Pending'` prevented an alre
 
 ### 2.6 Screenshot Evidence – COMMIT
 
-Screenshot filename:
-
-`Dadung_Rwang_301921911_P3_COMMIT.png`
-
-The screenshot shows the successful transaction, update results and verification of the confirmed payment.
-
----
+The screenshots showing the successful transaction, update results and verification are saved in the `screenshots/` folder.
 
 ## 3. ROLLBACK Transaction: Reversing an Invalid Payment Operation
 
@@ -167,7 +161,7 @@ The rollback cancelled the entire uncommitted transaction, including the tempora
 
 ### 3.6 Verification of Rolled-Back Changes
 
-The following query was used to check whether the temporary payment remained in the database:
+The following query checked whether the temporary payment remained in the database:
 
 ```sql
 SELECT COUNT(*) AS rolled_back_payment_count
@@ -191,31 +185,77 @@ The result confirmed that the temporary payment record was successfully removed.
 
 ### 3.7 Screenshot Evidence – ROLLBACK
 
-Screenshot filename:
+The screenshots showing the temporary payment insertion, invalid payment error, ROLLBACK command and final verification are saved in the `screenshots/` folder.
 
-`Dadung_Rwang_301921911_P3_ROLLBACK.png`
+## 4. Isolation and Concurrency Control
 
-The screenshot shows the temporary payment insertion, invalid payment error, ROLLBACK command and final verification.
+### 4.1 Objective
 
----
+This exercise demonstrates how PostgreSQL handles two customers attempting to purchase the last available Wireless Mouse at the same time using two independent database sessions.
 
-## 4. Transaction Management Analysis
+### 4.2 Transaction Isolation
 
-The exercise demonstrates how PostgreSQL transaction control helps maintain consistency during e-commerce payment processing.
+Both sessions used the READ COMMITTED isolation level.
+
+Session A started a transaction and reduced the Wireless Mouse stock from one unit to zero without immediately committing the change.
+
+Session B attempted to purchase the same product. Its update waited while Session A held the row lock. The activity check in Session A showed that the other session was waiting, with `wait_event_type` displayed as `Lock`.
+
+### 4.3 Execution Results
+
+After Session A committed, Session B's update completed with:
+
+```text
+UPDATE 0
+```
+
+This happened because the condition `stock_quantity > 0` was no longer satisfied after Session A purchased the last available unit.
+
+Session B was rolled back, and the original product stock was restored to 25 after the test.
+
+### 4.4 Concurrency Analysis
+
+The exercise demonstrated how PostgreSQL row-level locking coordinates simultaneous updates to the same product record.
+
+The conditional stock update prevented the second session from reducing stock below zero. This helps prevent overselling when multiple customers attempt to purchase the last available unit.
+
+The test also showed that READ COMMITTED does not allow a session to see another session's uncommitted changes. The row lock ensures that the second update waits for the first transaction to finish before evaluating the updated record.
+
+### 4.5 Screenshot Evidence – Concurrency
+
+The concurrency screenshots are saved in the `screenshots/` folder. They show the two database sessions, the lock wait, Session A's COMMIT and Session B's `UPDATE 0` result.
+
+## 5. Transaction Management Analysis
+
+The exercises demonstrate how PostgreSQL transaction control helps maintain consistency during e-commerce payment processing and product stock management.
 
 COMMIT permanently saves successful database operations. In the first transaction, the pending payment for ORD002 and its associated order status were updated together.
 
 ROLLBACK reverses uncommitted operations when an error occurs. In the second transaction, the invalid zero payment amount violated the `payment_amount_check` constraint. The rollback also removed the valid temporary payment inserted earlier in the same transaction.
 
-This demonstrates transaction atomicity: changes within a transaction are committed together or rolled back together. The database CHECK constraint also helps prevent invalid payment amounts from being stored.
+The concurrency exercise demonstrated how row-level locking and conditional stock updates help prevent overselling when two sessions attempt to purchase the same last unit.
 
-## 5. Files and Evidence
+These mechanisms support transaction atomicity and database consistency when correctly applied in application workflows.
+
+## 6. Files and Evidence
 
 | File or Evidence | Description |
 |---|---|
-| `Dadung_Rwang_301921911_P3_README.md` | Portfolio 3 transaction documentation |
-| `screenshots/` | Screenshots showing COMMIT and ROLLBACK operations |
+| `Dadung_Rwang_301921911_P3_README.md` | Portfolio 3 documentation |
+| `Dadung_Rwang_301921911_P3_Transactions.sql` | COMMIT and ROLLBACK SQL commands |
+| `Dadung_Rwang_301921911_P3_SessionA.sql` | Session A concurrency commands |
+| `Dadung_Rwang_301921911_P3_SessionB.sql` | Session B concurrency commands |
+| `screenshots/` | Screenshots showing COMMIT, ROLLBACK and concurrency operations |
 
-## 6. Conclusion
+## 7. Conclusion
 
-The practical exercise demonstrated the use of COMMIT and ROLLBACK in PostgreSQL within an e-commerce payment-processing scenario. These transaction controls help maintain database consistency by saving successful operations and reversing incomplete or invalid operations.
+The practical exercises demonstrated the use of COMMIT, ROLLBACK and transaction isolation in PostgreSQL within an e-commerce database.
+
+The payment-processing exercise showed how successful operations can be saved together and how invalid operations can be reversed. The concurrency exercise demonstrated how PostgreSQL locking and conditional stock updates can prevent two simultaneous purchases from reducing product stock below zero.
+
+Overall, the portfolio provided practical experience in transaction management, constraint enforcement, isolation and concurrency control.
+
+## 8. References
+
+- [PostgreSQL 16 – Transactions](https://www.postgresql.org/docs/16/tutorial-transactions.html)
+- [PostgreSQL 16 – Transaction Isolation](https://www.postgresql.org/docs/16/transaction-iso.html)
