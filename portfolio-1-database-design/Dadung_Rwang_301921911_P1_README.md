@@ -50,3 +50,102 @@ placement, simulated payment records and basic order status management.
 Product reviews, discount codes, refunds, multiple warehouses, real
 payment gateway integration, shipping logistics and user authentication
 are excluded.
+
+## Design and implementation files
+
+The following files document the database design, implementation and
+testing activities for this project:
+
+- `Dadung_Rwang_301921911_P1_Design.md` – Database design documentation,
+  including the entities, attributes, primary keys and relationships.
+- `Dadung_Rwang_301921911_P1_ERDiagram.md` – Entity Relationship Diagram
+  illustrating the database structure and relationships.
+- `Dadung_Rwang_301921911_P1_Normalisation.md` – Database normalisation
+  documentation showing the normalisation process.
+- `Dadung_Rwang_301921911_P1_Schema.sql` – SQL script for creating the
+  database tables, defining columns, keys and constraints.
+- `Dadung_Rwang_301921911_P1_SampleData.sql` – SQL script containing
+  fictional sample records for populating the database.
+- `Dadung_Rwang_301921911_P1_ConstraintTests.sql` – SQL statements used
+  to test database constraints and data integrity.
+- `screenshots/` – Supporting screenshots showing table structures,
+  sample data insertion, constraint tests and database record counts.
+
+## Implementation
+
+The database was implemented using PostgreSQL. It consists of five
+relational tables:
+
+1. `customer` – Stores customer information and registration details.
+2. `product` – Stores product information, prices, SKU details and
+   available stock quantities.
+3. `Order` – Stores customer orders, including order numbers, dates
+   and order statuses.
+4. `orderitem` – Stores the individual products and quantities
+   associated with each order.
+5. `payment` – Stores payment records, amounts, payment statuses
+   and payment dates.
+
+Primary keys were implemented to uniquely identify records, while
+foreign keys establish relationships between the tables and maintain
+referential integrity.
+
+Additional constraints were implemented to enforce business rules,
+including NOT NULL, UNIQUE and CHECK constraints. These help prevent
+invalid records, duplicate values, negative prices, invalid stock
+quantities and unacceptable payment statuses.
+
+Fictional sample data was inserted into the five tables to demonstrate
+the database structure, relationships and operations. SQL queries were
+also executed to inspect table structures, retrieve records and verify
+the number of records stored in each table.
+
+## Test results
+
+The database was tested using SQL statements to verify that the
+implemented constraints enforce the defined business rules.
+
+The tests covered the following areas:
+
+- Required fields: Tested that mandatory fields do not accept NULL
+  values.
+- Unique email addresses: Tested that duplicate customer email
+  addresses are rejected.
+- Product SKU uniqueness: Tested that duplicate SKU values are
+  rejected.
+- Product prices: Tested that product prices must be greater than zero.
+- Product stock quantities: Tested that negative stock quantities
+  are rejected.
+- Order item quantities: Tested that invalid or non-positive
+  quantities are rejected.
+- Order item product references: Tested that order items reference
+  existing products.
+- Customer order references: Tested that orders reference existing
+  customers.
+- Payment amounts: Tested that payment amounts must be greater than
+  zero.
+- Payment statuses: Tested that only Pending, Successful and Failed
+  payment statuses are accepted.
+
+The sample data insertion and record-count verification produced the
+following results:
+
+| Table | Number of Records |
+|---|---:|
+| customer | 3 |
+| product | 3 |
+| Order | 3 |
+| orderitem | 4 |
+| payment | 3 |
+| **Total** | **16** |
+
+The record-count query confirmed that all five tables contained the
+expected sample records, with a total of 16 records across the database.
+
+The constraint tests demonstrated how PostgreSQL enforces data
+integrity by rejecting invalid values and maintaining the defined
+relationships between tables.
+
+Supporting screenshots of the implementation, sample data, constraint
+tests and record-count verification are available in the `screenshots/`
+directory.
